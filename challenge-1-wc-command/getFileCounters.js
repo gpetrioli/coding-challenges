@@ -1,4 +1,4 @@
-import readline from "readline";
+import fs from "fs";
 
 export async function getFileCounters(stream) {
   let lineCount = 0;
@@ -6,19 +6,15 @@ export async function getFileCounters(stream) {
   let charCount = 0;
   let byteCount = 0;
 
-  const readInterface = readline.createInterface({
-    input: stream || process.stdin,
-    crlfDelay: Infinity,
-  });
-  for await (const line of readInterface) {
-    // Each line in input.txt will be successively available here as `line`.
+  for await (const line of lineByLine(stream)) {
     lineCount++;
     wordCount += line
       .split(/[\u0009\u000a\u000b\u000c\u000d\u0020]/)
       .filter((word) => Boolean(word.trim())).length;
-    charCount += line.length + 2; // +2 for \r\n
-    byteCount += Buffer.byteLength(line, "utf8") + 2; // +2 for \r\n
+    charCount += line.length;
+    byteCount += Buffer.byteLength(line, "utf8");
   }
+
   return { lineCount, wordCount, charCount, byteCount };
 }
 
@@ -26,5 +22,22 @@ export function addToTotalCounters(totalCounters, counters) {
   for (const [counterName, counterValue] of Object.entries(counters)) {
     totalCounters[counterName] =
       (totalCounters[counterName] || 0) + counterValue;
+  }
+}
+
+async function* lineByLine(stream) {
+  let line = "";
+  for await (const chunk of stream) {
+    for (const char of chunk) {
+      line += char;
+      if (char === "\n") {
+        yield line;
+        line = "";
+      }
+    }
+  }
+
+  if (line) {
+    yield line;
   }
 }
