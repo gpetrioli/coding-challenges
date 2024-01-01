@@ -1,0 +1,13 @@
+{
+  "name": "ccwc",
+  "version": "1.0.0",
+  "description": "wc utility",
+  "type": "module",
+  "main": "ccwc.js",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "glob": "^10.3.10",
+    "yargs-parser": "^21.1.1"
+  }
+}
