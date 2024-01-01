@@ -20,7 +20,8 @@ async function main() {
   if (fileGlobs.length === 0) {
     // fallback to standard input
     try {
-      const counters = await getFileCounters();
+      process.stdin.setEncoding("utf8");
+      const counters = await getFileCounters(process.stdin);
       showFileCounters({ counters, options });
     } catch (err) {
       console.error(err);
@@ -36,7 +37,10 @@ async function main() {
       const relativePath = file.relative();
       try {
         const counters = await getFileCounters(
-          fs.createReadStream(relativePath)
+          fs.createReadStream(relativePath, {
+            autoClose: true,
+            encoding: "utf8",
+          })
         );
         showFileCounters({ filePath: relativePath, counters, options });
         addToTotalCounters(totalCounters, counters);
