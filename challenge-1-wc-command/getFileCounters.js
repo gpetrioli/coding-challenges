@@ -21,3 +21,10 @@ export async function getFileCounters(stream) {
   }
   return { lineCount, wordCount, charCount, byteCount };
 }
+
+export function addToTotalCounters(totalCounters, counters) {
+  for (const [counterName, counterValue] of Object.entries(counters)) {
+    totalCounters[counterName] =
+      (totalCounters[counterName] || 0) + counterValue;
+  }
+}

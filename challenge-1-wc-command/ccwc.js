@@ -1,7 +1,7 @@
 import fs from "fs";
 import { globSync } from "glob";
 import parser from "yargs-parser";
-import { getFileCounters } from "./getFileCounters.js";
+import { getFileCounters, addToTotalCounters } from "./getFileCounters.js";
 import { showFileCounters } from "./showFileCounters.js";
 
 async function main() {
@@ -30,19 +30,24 @@ async function main() {
     const files = fileGlobs
       .flatMap((fileGlob) => globSync(fileGlob, { withFileTypes: true }))
       .filter((file) => file.isFile());
+    const totalCounters = {};
 
     for (const file of files) {
       const relativePath = file.relative();
-
       try {
         const counters = await getFileCounters(
           fs.createReadStream(relativePath)
         );
         showFileCounters({ filePath: relativePath, counters, options });
+        addToTotalCounters(totalCounters, counters);
       } catch (err) {
         console.error(err);
         process.exit(1);
       }
+    }
+
+    if (files.length > 1) {
+      showFileCounters({ filePath: "total", counters: totalCounters, options });
     }
   }
 
