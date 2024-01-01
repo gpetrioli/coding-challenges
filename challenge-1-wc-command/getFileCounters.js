@@ -7,7 +7,6 @@ export async function getFileCounters(stream) {
   let byteCount = 0;
 
   for await (const line of lineByLine(stream)) {
-    // Each line in input.txt will be successively available here as `line`.
     lineCount++;
     wordCount += line
       .split(/[\u0009\u000a\u000b\u000c\u000d\u0020]/)

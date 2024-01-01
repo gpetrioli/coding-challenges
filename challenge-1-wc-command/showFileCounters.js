@@ -13,7 +13,7 @@ export function showFileCounters({ filePath = "", counters, options }) {
     countersToShow.push(formatNumber(counters.charCount));
   }
 
-  console.log(countersToShow.join(""), filePath);
+  console.log(countersToShow.join(" "), filePath);
 }
 
 function formatNumber(value) {
